@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import Slider from "react-slick";
 import { RefreshCw, ArrowRightLeft } from "lucide-react";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function CurrencyConverter() {
   const [amount, setAmount] = useState(1);
@@ -9,8 +12,7 @@ export default function CurrencyConverter() {
   const [convertedAmount, setConvertedAmount] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  // Sample exchange rates (in a real app, you'd fetch these from an API)
+
   const exchangeRates = {
     USD: { EUR: 0.92, GBP: 0.79, JPY: 155.42, CAD: 1.36, AUD: 1.51, INR: 83.27, CNY: 7.22 },
     EUR: { USD: 1.09, GBP: 0.85, JPY: 168.42, CAD: 1.47, AUD: 1.64, INR: 90.27, CNY: 7.83 },
@@ -40,9 +42,8 @@ export default function CurrencyConverter() {
   const convertCurrency = () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      // Simulate API call with a small delay
       setTimeout(() => {
         if (fromCurrency === toCurrency) {
           setExchangeRate(1);
@@ -66,25 +67,48 @@ export default function CurrencyConverter() {
   };
 
   const formatCurrency = (value, currency) => {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
       currency: currency,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(value);
   };
 
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3500
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-t to-blue-500 from-fuchsia-400 p-4">
-      <div className="bg-white shadow-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">Currency Converter</h1>
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-            {error}
+      {/* Slider Section */}
+      <div className="w-full max-w-md mb-6">
+        <Slider {...sliderSettings}>
+          <div className="bg-blue-100 text-blue-900 p-4 rounded-lg text-center">
+            <p>1 USD = 0.92 EUR</p>
           </div>
+          <div className="bg-blue-100 text-blue-900 p-4 rounded-lg text-center">
+            <p>1 EUR = 1.09 USD</p>
+          </div>
+          <div className="bg-blue-100 text-blue-900 p-4 rounded-lg text-center">
+            <p>1 GBP = 1.27 USD</p>
+          </div>
+        </Slider>
+      </div>
+
+      <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 relative z-10">
+        <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">Currency Converter</h1>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>
         )}
-        
+
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
           <input
@@ -95,7 +119,7 @@ export default function CurrencyConverter() {
             min="0"
           />
         </div>
-        
+
         <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
@@ -111,14 +135,14 @@ export default function CurrencyConverter() {
               ))}
             </select>
           </div>
-          
-          <button 
+
+          <button
             onClick={swapCurrencies}
             className="mt-6 p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
           >
             <ArrowRightLeft size={20} className="text-blue-600" />
           </button>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
             <select
@@ -134,7 +158,7 @@ export default function CurrencyConverter() {
             </select>
           </div>
         </div>
-        
+
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-500">Exchange Rate:</span>
@@ -142,8 +166,8 @@ export default function CurrencyConverter() {
               <span className="font-medium">
                 {exchangeRate ? `1 ${fromCurrency} = ${exchangeRate} ${toCurrency}` : "..."}
               </span>
-              <button 
-                onClick={convertCurrency} 
+              <button
+                onClick={convertCurrency}
                 className="ml-2 p-1 rounded-full hover:bg-gray-200 transition-colors"
                 disabled={isLoading}
               >
@@ -151,19 +175,17 @@ export default function CurrencyConverter() {
               </button>
             </div>
           </div>
-          
+
           <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">
-              {amount} {fromCurrency} =
-            </p>
+            <p className="text-sm text-gray-600 mb-1">{amount} {fromCurrency} =</p>
             <p className="text-3xl font-bold text-blue-700">
               {isLoading ? "Converting..." : convertedAmount ? formatCurrency(convertedAmount, toCurrency) : "..."}
             </p>
           </div>
         </div>
       </div>
-      
-      <div className="mt-6 text-sm text-hite text-center">
+
+      <div className="mt-6 text-sm text-white text-center">
         <p>Exchange rates are for demonstration purposes only.</p>
         <p>Last updated: May 15, 2025</p>
       </div>
